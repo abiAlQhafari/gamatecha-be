@@ -42,6 +42,10 @@ async function bootstrap() {
   SwaggerModule.setup('iqro', app, document, {
     useGlobalPrefix: true,
     customSiteTitle: 'Gamatecha API',
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
   });
 
   await app.listen(3000);

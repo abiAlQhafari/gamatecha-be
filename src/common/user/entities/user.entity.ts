@@ -26,6 +26,9 @@ export class User extends BaseEntity {
   @Column({ nullable: false })
   email: string;
 
+  @Column({ default: false })
+  isAdmin: boolean;
+
   @Column({ nullable: false })
   @Exclude()
   password: string;

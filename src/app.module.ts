@@ -6,6 +6,10 @@ import { AppService } from './app.service';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { BaseValidationPipe } from './common/pipe/base-validation.pipes';
 import { AllExceptionFilter } from './common/exception/base.exception';
+import { UserModule } from './common/user/user.module';
+import { AuthsModule } from './common/auths/auths.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { RedisOptions } from './config/redis.config';
 
 @Module({
   imports: [
@@ -24,6 +28,9 @@ import { AllExceptionFilter } from './common/exception/base.exception';
     //   }),
     //   inject: [ConfigService],
     // }),
+    CacheModule.registerAsync(RedisOptions),
+    UserModule,
+    AuthsModule,
   ],
   providers: [
     AppService,
