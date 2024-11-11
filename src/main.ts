@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SeedersService } from './database/seeders/seeders.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const seedService = app.get(SeedersService);
+  await seedService.seedBaseData();
 
   app.enableCors();
 

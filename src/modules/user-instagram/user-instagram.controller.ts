@@ -1,0 +1,137 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Query,
+  HttpCode,
+} from '@nestjs/common';
+import { UserInstagramService } from './user-instagram.service';
+import { CreateUserInstagramDto } from './dto/create-user-instagram.dto';
+import { UpdateUserInstagramDto } from './dto/update-user-instagram.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../common/auths/jwt-auth.guard';
+import {
+  CreateSwaggerExample,
+  DeleteSwaggerExample,
+  DetailSwaggerExample,
+  ListSwaggerExample,
+} from '../../common/swagger/swagger-example.response';
+import { ResponseUserInstagramDto } from './dto/response-user-instagram.dto';
+import { BaseSuccessResponse } from '../../common/response/base.response';
+import { plainToInstance } from 'class-transformer';
+import { FilteringUserInstagramDto } from './dto/filtering-user-instagram.dto';
+import { PathParameterDto } from '../../common/dto/path-parameter.dto';
+import { UpdateResult } from 'typeorm';
+
+@Controller('user-instagram')
+@ApiTags('UserInstagram')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+export class UserInstagramController {
+  constructor(private readonly userInstagramService: UserInstagramService) {}
+
+  @CreateSwaggerExample(
+    CreateUserInstagramDto,
+    ResponseUserInstagramDto,
+    false,
+    'Membuat satu User Instagram',
+  )
+  @Post()
+  async create(
+    @Body() createUserInstagramDto: CreateUserInstagramDto,
+    @Request() req: any,
+  ): Promise<BaseSuccessResponse<ResponseUserInstagramDto>> {
+    const result = await this.userInstagramService.create(
+      createUserInstagramDto,
+      req.user,
+    );
+    return {
+      data: plainToInstance(ResponseUserInstagramDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
+
+  @Get()
+  @ListSwaggerExample(
+    ResponseUserInstagramDto,
+    'Mengambil Semua Data User Instagram',
+  )
+  async findAll(
+    @Request() req: any,
+    @Query() queryParameterDto: FilteringUserInstagramDto,
+  ): Promise<BaseSuccessResponse<ResponseUserInstagramDto>> {
+    const { page = 1, limit = 10 } = queryParameterDto;
+    const [result, total] =
+      await this.userInstagramService.findAndCount(queryParameterDto);
+
+    return {
+      data: plainToInstance(ResponseUserInstagramDto, result, {
+        excludeExtraneousValues: true,
+      }),
+      meta: {
+        page: page,
+        totalData: total,
+        totalPage: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  @Get(':id')
+  @DetailSwaggerExample(
+    ResponseUserInstagramDto,
+    'Mengambil satu data User Instagram',
+  )
+  async findOne(
+    @Request() req: any,
+    @Param() pathParameter: PathParameterDto,
+  ): Promise<BaseSuccessResponse<ResponseUserInstagramDto>> {
+    const result =
+      await this.userInstagramService.findOneByOrFail(pathParameter);
+
+    return {
+      data: plainToInstance(ResponseUserInstagramDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
+
+  @Patch(':id')
+  @DetailSwaggerExample(
+    ResponseUserInstagramDto,
+    'Mengupdate satu data User Instagram',
+  )
+  async update(
+    @Param() pathParameter: PathParameterDto,
+    @Body() updateDto: UpdateUserInstagramDto,
+    @Request() req: any,
+  ): Promise<BaseSuccessResponse<ResponseUserInstagramDto>> {
+    const result = await this.userInstagramService.update(
+      pathParameter,
+      updateDto,
+      req.user,
+    );
+
+    return {
+      data: plainToInstance(ResponseUserInstagramDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @DeleteSwaggerExample('Menghapus satu data User Instagram', '')
+  async remove(
+    @Param() pathParameter: PathParameterDto,
+    @Request() req: any,
+  ): Promise<UpdateResult> {
+    return await this.userInstagramService.remove(pathParameter, req.user);
+  }
+}

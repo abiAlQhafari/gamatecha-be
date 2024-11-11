@@ -33,14 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const isPeserta =
-      payload['hasGroups'].findIndex((item) => item == 'Peserta') != -1
-        ? true
-        : false;
-    if (isPeserta && getCache != rawAccessToken) {
-      throw new UnauthorizedException();
-    }
-
     return payload;
   }
 }

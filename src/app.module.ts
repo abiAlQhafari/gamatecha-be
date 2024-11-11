@@ -10,6 +10,8 @@ import { UserModule } from './common/user/user.module';
 import { AuthsModule } from './common/auths/auths.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from './config/redis.config';
+import { SeedersModule } from './database/seeders/seeders.module';
+import { UserInstagramModule } from './modules/user-instagram/user-instagram.module';
 
 @Module({
   imports: [
@@ -29,8 +31,10 @@ import { RedisOptions } from './config/redis.config';
     //   inject: [ConfigService],
     // }),
     CacheModule.registerAsync(RedisOptions),
+    SeedersModule,
     UserModule,
     AuthsModule,
+    UserInstagramModule,
   ],
   providers: [
     AppService,
