@@ -20,8 +20,8 @@ import { TokenResponseDto } from './dto/token-response.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { BaseSuccessResponse } from '../response/base.response';
 
-@Controller('auths')
-@ApiTags('Auths')
+@Controller('auth')
+@ApiTags('Auth')
 export class AuthsController {
   constructor(private readonly authsService: AuthsService) {}
 

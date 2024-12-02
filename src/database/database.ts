@@ -18,7 +18,7 @@ export async function typeOrmConfig(): Promise<DataSourceOptions> {
     synchronize: false,
     entities: ['dist/bases/**/*.entity{.ts,.js}', 'dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/database/migrations/*{.ts,.js}'],
-    cache: true,
+    // cache: true,
     // logging: true,
     replication: {
       master: {

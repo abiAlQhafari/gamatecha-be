@@ -12,6 +12,9 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from './config/redis.config';
 import { SeedersModule } from './database/seeders/seeders.module';
 import { UserInstagramModule } from './modules/user-instagram/user-instagram.module';
+import { MediaTypeModule } from './modules/media-type/media-type.module';
+import { PostInstagramModule } from './modules/post-instagram/post-instagram.module';
+import { ArticlesModule } from './modules/articles/articles.module';
 
 @Module({
   imports: [
@@ -35,6 +38,9 @@ import { UserInstagramModule } from './modules/user-instagram/user-instagram.mod
     UserModule,
     AuthsModule,
     UserInstagramModule,
+    MediaTypeModule,
+    PostInstagramModule,
+    ArticlesModule,
   ],
   providers: [
     AppService,

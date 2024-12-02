@@ -1,9 +1,6 @@
-export enum StatusApproval {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
+export enum ArticleStatus {
   PUBLISHED = 'PUBLISHED',
-  // ARCHIVED = 'ARCHIVED',
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum ActiveStatus {
