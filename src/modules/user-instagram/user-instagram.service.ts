@@ -11,6 +11,10 @@ import {
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayloadDto } from 'src/common/dto/jwt-payload.dto';
+import { HttpService } from '@nestjs/axios';
+import { catchError, firstValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
+import { PostInstagram } from '../post-instagram/entities/post-instagram.entity';
 
 @Injectable()
 export class UserInstagramService extends BaseService<
@@ -21,6 +25,7 @@ export class UserInstagramService extends BaseService<
     private readonly dataSource: DataSource,
     @InjectRepository(UserInstagram)
     private readonly repository: Repository<UserInstagram>,
+    private readonly httpService: HttpService,
   ) {
     super(repository);
   }
@@ -47,6 +52,45 @@ export class UserInstagramService extends BaseService<
         user,
         queryRunner.manager,
       );
+      await queryRunner.commitTransaction();
+
+      const scrapePosts = await firstValueFrom(
+        this.httpService
+          .get(
+            `http://127.0.0.1:8000/api/instagram/${Array.isArray(instance) ? instance[0].username : instance.username}`,
+          )
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error);
+              throw error;
+            }),
+          ),
+      );
+
+      if (scrapePosts.status === 200) {
+        await queryRunner.startTransaction();
+        let postInstagrams = [];
+
+        for (const post of scrapePosts.data) {
+          const postInstagram = queryRunner.manager
+            .getRepository(PostInstagram)
+            .create({
+              code: post.code,
+              instagramId: post.id,
+              instagramPk: post.pk,
+              takenAt: post.taken_at || new Date(),
+              caption: post.caption_text || '',
+              thumbnailUrl: post.thumbnail_url,
+              mediaUrl: post.video_url || post.image_url,
+              postUrl: 'https://www.instagram.com/p/' + post.code,
+              user: Array.isArray(instance) ? instance[0] : instance,
+            });
+
+          postInstagrams.push(postInstagram);
+        }
+
+        await this.dataSource.getRepository(PostInstagram).save(postInstagrams);
+      }
 
       await queryRunner.commitTransaction();
       return instance;

@@ -26,7 +26,7 @@ export class UserService extends BaseService<User, CreateUserDto> {
   }
 
   defaultRelation() {
-    return ['userExtend'];
+    return [];
   }
 
   async create(

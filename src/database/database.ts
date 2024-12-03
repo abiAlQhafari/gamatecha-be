@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ConfigModule } from 'src/config/config.module';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { SeederOptions } from 'typeorm-extension';
 
 async function getConfigService() {
   const app = await NestFactory.createApplicationContext(ConfigModule);
@@ -11,13 +12,17 @@ async function getConfigService() {
 /*
 It will be used for app connection to Database.
 */
-export async function typeOrmConfig(): Promise<DataSourceOptions> {
+export async function typeOrmConfig(): Promise<
+  DataSourceOptions & SeederOptions
+> {
   const configService = await getConfigService();
   return {
     type: 'postgres',
     synchronize: false,
     entities: ['dist/bases/**/*.entity{.ts,.js}', 'dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/database/migrations/*{.ts,.js}'],
+    seeds: ['dist/database/seeders/**/*{.ts,.js}'],
+    factories: ['dist/database/factories/**/*{.ts,.js}'],
     // cache: true,
     // logging: true,
     replication: {

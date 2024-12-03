@@ -4,11 +4,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entity/base.entity';
 import { ArticleStatus } from '../../../common/enum/status.enum';
 import { PostInstagram } from '../../post-instagram/entities/post-instagram.entity';
+import { Category } from '../../categories/entities/category.entity';
 
 @Entity()
 export class Article extends BaseEntity {
@@ -37,6 +40,14 @@ export class Article extends BaseEntity {
   })
   @JoinColumn()
   postInstagram: PostInstagram;
+
+  @ManyToMany(() => Category, (category) => category.articles, {
+    cascade: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinTable()
+  categories: Category[];
 
   @BeforeInsert()
   @BeforeUpdate()

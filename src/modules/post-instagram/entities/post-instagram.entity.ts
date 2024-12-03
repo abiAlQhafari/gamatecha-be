@@ -51,7 +51,7 @@ export class PostInstagram extends BaseEntity {
       onUpdate: 'CASCADE',
     },
   )
-  user: number;
+  user: UserInstagram;
 
   @OneToOne(() => Article, (article) => article.postInstagram, {
     nullable: true,
