@@ -6,12 +6,12 @@ export class ResponseCategoryDto {
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  name: string | null = null;
 
   @Expose()
   @ApiPropertyOptional()

@@ -15,6 +15,8 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { PostInstagram } from '../post-instagram/entities/post-instagram.entity';
+import { StorageService } from '../storage/storage.service';
+import { Readable } from 'stream';
 
 @Injectable()
 export class UserInstagramService extends BaseService<
@@ -26,6 +28,7 @@ export class UserInstagramService extends BaseService<
     @InjectRepository(UserInstagram)
     private readonly repository: Repository<UserInstagram>,
     private readonly httpService: HttpService,
+    private readonly storageService: StorageService,
   ) {
     super(repository);
   }
@@ -69,9 +72,33 @@ export class UserInstagramService extends BaseService<
 
       if (scrapePosts.status === 200) {
         await queryRunner.startTransaction();
-        let postInstagrams = [];
+        let postInstagrams: PostInstagram[] = [];
 
         for (const post of scrapePosts.data) {
+          const thumbnailResponse = await this.httpService.axiosRef({
+            method: 'get',
+            url: post.thumbnail_url,
+            responseType: 'arraybuffer',
+          });
+
+          const thumbnailFile: Express.Multer.File = {
+            fieldname: 'file',
+            originalname: `thumbnail-${post.code}.jpg`,
+            encoding: '7bit',
+            mimetype: thumbnailResponse.headers['content-type'],
+            size: Buffer.byteLength(thumbnailResponse.data),
+            buffer: Buffer.from(thumbnailResponse.data),
+            stream: Readable.from(thumbnailResponse.data),
+            destination: '',
+            filename: '',
+            path: '',
+          };
+
+          const thumbnailUrl = await this.storageService.uploadFile(
+            thumbnailFile,
+            'public-read',
+          );
+
           const postInstagram = queryRunner.manager
             .getRepository(PostInstagram)
             .create({
@@ -80,7 +107,7 @@ export class UserInstagramService extends BaseService<
               instagramPk: post.pk,
               takenAt: post.taken_at || new Date(),
               caption: post.caption_text || '',
-              thumbnailUrl: post.thumbnail_url,
+              thumbnailUrl: thumbnailUrl,
               mediaUrl: post.video_url || post.image_url,
               postUrl: 'https://www.instagram.com/p/' + post.code,
               user: Array.isArray(instance) ? instance[0] : instance,

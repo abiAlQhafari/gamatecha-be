@@ -1,20 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose, Type } from 'class-transformer';
+import { ResponsePostInstagramDto } from '../../post-instagram/dto/response-post-instagram.dto';
 
 export class ResponseUserInstagramDto {
   @Expose()
   @ApiProperty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
-  username: string;
+  username: string | null = null;
+
+  @Expose()
+  @ApiPropertyOptional()
+  @Type(() => ResponsePostInstagramDto)
+  postInstagram?: ResponsePostInstagramDto[];
 
   @Expose()
   @ApiProperty()
-  createdAt: Date;
+  createdAt: Date | null = null;
 
   @Expose()
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt: Date | null = null;
 }

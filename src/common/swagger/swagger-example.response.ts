@@ -34,7 +34,7 @@ export function successSchema(
   isArray: boolean = false,
   isMeta: boolean = false,
 ): SchemaObject {
-  let meta = null;
+  let meta: any = null;
   if (isMeta) {
     meta = {
       example: new BasePaginationResponse(),

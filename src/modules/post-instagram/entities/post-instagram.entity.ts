@@ -14,34 +14,34 @@ import { Article } from '../../articles/entities/article.entity';
 @Entity()
 export class PostInstagram extends BaseEntity {
   @Column({ unique: true, nullable: false })
-  instagramPk: string;
+  instagramPk: string = '';
 
   @Column({ unique: true, nullable: false })
-  instagramId: string;
+  instagramId: string = '';
 
   @Column({ unique: true, nullable: false })
-  code: string;
+  code: string = '';
 
   @Column()
-  takenAt: Date;
+  takenAt: Date = new Date();
 
   @Column({ nullable: false })
-  thumbnailUrl: string;
+  thumbnailUrl: string = '';
 
   @Column({ nullable: false })
-  mediaUrl: string;
+  mediaUrl: string = '';
 
   @Column({ nullable: false })
-  caption: string;
+  caption: string = '';
 
   @Column()
-  postUrl: string;
+  postUrl: string = '';
 
   @ManyToOne(() => MediaType, (mediaType) => mediaType.postInstagram, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  mediaType: number;
+  mediaType: number | null = null;
 
   @ManyToOne(
     () => UserInstagram,
@@ -51,12 +51,12 @@ export class PostInstagram extends BaseEntity {
       onUpdate: 'CASCADE',
     },
   )
-  user: UserInstagram;
+  user: UserInstagram | null = null;
 
   @OneToOne(() => Article, (article) => article.postInstagram, {
     nullable: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  article: Article;
+  article: Article | null = null;
 }

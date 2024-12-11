@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ResponseMediaTypeDto } from '../../media-type/dto/response-media-type.dto';
 import { ResponseUserInstagramDto } from '../../user-instagram/dto/response-user-instagram.dto';
@@ -6,47 +6,47 @@ import { ResponseUserInstagramDto } from '../../user-instagram/dto/response-user
 export class ResponsePostInstagramDto {
   @Expose()
   @ApiProperty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
-  instagramPk: string;
+  instagramPk: string | null = null;
 
   @Expose()
   @ApiProperty()
-  instagramId: string;
+  instagramId: string | null = null;
 
   @Expose()
   @ApiProperty()
-  code: string;
+  code: string | null = null;
 
   @Expose()
   @ApiProperty()
-  takenAt: Date;
+  takenAt: Date | null = null;
 
   @Expose()
   @ApiProperty()
-  thumbnailUrl: string;
+  thumbnailUrl: string | null = null;
 
   @Expose()
   @ApiProperty()
-  mediaUrl: string;
+  mediaUrl: string | null = null;
 
   @Expose()
   @ApiProperty()
-  caption: string;
+  caption: string | null = null;
 
   @Expose()
   @ApiProperty()
-  postUrl: string;
+  postUrl: string | null = null;
 
   @Expose()
-  @ApiProperty({ type: () => ResponseMediaTypeDto })
+  @ApiPropertyOptional({ type: () => ResponseMediaTypeDto })
   @Type(() => ResponseMediaTypeDto)
-  mediaType: ResponseMediaTypeDto;
+  mediaType: ResponseMediaTypeDto | null = null;
 
   @Expose()
-  @ApiProperty({ type: () => ResponseUserInstagramDto })
+  @ApiPropertyOptional({ type: () => ResponseUserInstagramDto })
   @Type(() => ResponseUserInstagramDto)
-  user: ResponseUserInstagramDto;
+  user: ResponseUserInstagramDto | null = null;
 }

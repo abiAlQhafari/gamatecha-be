@@ -4,6 +4,8 @@ import { UserInstagramController } from './user-instagram.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserInstagram } from './entities/user-instagram.entity';
 import { HttpModule } from '@nestjs/axios';
+import { PostInstagramModule } from '../post-instagram/post-instagram.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule.register({
       timeout: 300000,
     }),
+    PostInstagramModule,
+    StorageModule,
   ],
   controllers: [UserInstagramController],
   providers: [UserInstagramService],

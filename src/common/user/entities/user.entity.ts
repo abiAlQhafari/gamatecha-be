@@ -11,7 +11,7 @@ import {
 import { BaseEntity } from '../../entity/base.entity';
 import { IsEmail } from 'class-validator';
 import { Exclude } from 'class-transformer';
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 
 @Entity('users')
 @Index(['id', 'username', 'email'], {
@@ -20,18 +20,18 @@ import { hash } from 'bcrypt';
 })
 export class User extends BaseEntity {
   @Column({ nullable: false })
-  username: string;
+  username: string | '' = '';
 
   @IsEmail()
   @Column({ nullable: false })
-  email: string;
+  email: string | '' = '';
 
   @Column({ default: false })
-  isAdmin: boolean;
+  isAdmin: boolean = false;
 
   @Column({ nullable: false })
   @Exclude()
-  password: string;
+  password: string | '' = '';
 
   @BeforeInsert()
   @BeforeUpdate()

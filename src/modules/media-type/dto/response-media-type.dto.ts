@@ -4,9 +4,9 @@ import { Expose } from 'class-transformer';
 export class ResponseMediaTypeDto {
   @Expose()
   @ApiProperty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
-  name: string;
+  name: string | null = null;
 }

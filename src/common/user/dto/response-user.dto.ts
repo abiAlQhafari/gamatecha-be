@@ -13,27 +13,27 @@ export class ResponseUserDto {
   @Expose()
   @ApiProperty()
   @IsNumber()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
   @IsString()
-  username: string;
+  username: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsEmail()
-  email: string;
+  email: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsDate()
-  createdAt: Date;
+  createdAt: Date | null = null;
 
   @Expose()
   @ApiProperty()
   @IsDate()
-  updatedAt: Date;
+  updatedAt: Date | null = null;
 
   // @Expose()
   // @IsOptional()

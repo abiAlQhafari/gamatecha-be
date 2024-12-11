@@ -4,5 +4,5 @@ import { IsNotEmpty } from 'class-validator';
 export class CreateCategoryDto {
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  name: string | null = null;
 }

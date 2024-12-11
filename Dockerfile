@@ -1,20 +1,35 @@
+# Gunakan image Node.js terbaru
 FROM node:latest
 
+# Tetapkan zona waktu
 ENV TZ="Asia/Jakarta"
 
+# Atur opsi Node.js untuk penggunaan memori
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
+# Instal pnpm secara global
+RUN npm install -g pnpm
+
+# Tentukan direktori kerja
 WORKDIR /app
 
-COPY package*.json ./
+# Salin file package.json dan pnpm-lock.yaml
+COPY package*.json pnpm-lock.yaml ./
 
-RUN npm install
+# Instal dependensi menggunakan pnpm
+RUN pnpm install --frozen-lockfile
 
+# Salin seluruh kode aplikasi
 COPY . .
 
-RUN npm run build
+# Bangun aplikasi
+RUN pnpm run build
+
+# Tambahkan izin eksekusi untuk file run.sh
 RUN chmod +x ./run.sh
 
-EXPOSE 3000
+# Buka port 3001
+EXPOSE 3001
 
+# Jalankan aplikasi
 CMD ["./run.sh"]

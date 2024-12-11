@@ -5,13 +5,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class TokenResponseDto implements TokenPayload {
   @Expose()
   @ApiProperty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
-  username: string;
+  username: string | null = null;
 
   @Expose()
   @ApiProperty()
-  isAdmin?: boolean;
+  isAdmin?: boolean | null = null;
 }

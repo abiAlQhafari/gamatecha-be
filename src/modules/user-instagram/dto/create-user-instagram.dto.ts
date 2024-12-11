@@ -5,5 +5,5 @@ export class CreateUserInstagramDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  username: string;
+  username: string | null = null;
 }

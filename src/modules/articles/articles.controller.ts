@@ -103,7 +103,9 @@ export class ArticleController {
     @Request() req: any,
     @Param() pathParameter: QueryParameterArticleDto,
   ): Promise<BaseSuccessResponse<ResponseArticleDto>> {
-    const result = await this.articleService.findOneByOrFail(pathParameter);
+    const result = await this.articleService.findOneByOrFail(pathParameter, {
+      categories: true,
+    });
 
     return {
       data: plainToInstance(ResponseArticleDto, result, {
@@ -112,10 +114,10 @@ export class ArticleController {
     };
   }
 
-  @Patch(':id')
+  @Patch(':slug')
   @DetailSwaggerExample(ResponseArticleDto, 'Mengupdate satu Artikel')
   async update(
-    @Param() pathParameter: PathParameterDto,
+    @Param() pathParameter: { slug: string },
     @Body() updateDto: UpdateArticleDto,
     @Request() req: any,
   ): Promise<BaseSuccessResponse<ResponseArticleDto>> {

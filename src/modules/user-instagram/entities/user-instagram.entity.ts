@@ -5,10 +5,13 @@ import { PostInstagram } from '../../post-instagram/entities/post-instagram.enti
 @Entity()
 export class UserInstagram extends BaseEntity {
   @Column({ nullable: false })
-  username: string;
+  username: string = '';
+
+  @Column({ nullable: false })
+  avatar: string = '';
 
   @OneToMany(() => PostInstagram, (postInstagram) => postInstagram.user, {
     cascade: true,
   })
-  postInstagram: PostInstagram[];
+  postInstagram: PostInstagram[] | null = null;
 }

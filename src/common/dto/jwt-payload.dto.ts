@@ -2,17 +2,17 @@ import { Type } from 'class-transformer';
 
 export class JwtPayloadDto {
   @Type(() => Number)
-  id: number;
+  id: number = 0;
 
   @Type(() => String)
-  username: string;
+  username: string = '';
 
   @Type(() => Boolean)
-  isAdmin: boolean;
+  isAdmin: boolean = false;
 
   @Type(() => Array)
-  hasGroups: [];
+  hasGroups: [] = [];
 
   @Type(() => Array)
-  hasPermissions: [];
+  hasPermissions: [] = [];
 }

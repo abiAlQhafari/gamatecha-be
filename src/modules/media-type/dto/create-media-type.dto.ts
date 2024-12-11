@@ -5,5 +5,5 @@ export class CreateMediaTypeDto {
   @Expose()
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name: string | null = null;
 }

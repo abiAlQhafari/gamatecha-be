@@ -6,10 +6,10 @@ export class LoginResponseDto {
   @IsString()
   @Expose()
   @ApiProperty()
-  accessToken: string;
+  accessToken: string | null = null;
 
   @IsString()
   @Expose()
   @ApiProperty()
-  refreshToken: string;
+  refreshToken: string | null = null;
 }

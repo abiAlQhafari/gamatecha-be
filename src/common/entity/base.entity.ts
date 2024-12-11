@@ -13,17 +13,17 @@ import { JwtPayloadDto } from '../dto/jwt-payload.dto';
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number = 0;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
-  createdAt: Date;
+  createdAt: Date = new Date();
 
   @UpdateDateColumn({ type: 'timestamp with time zone' })
-  updatedAt: Date;
+  updatedAt: Date = new Date();
 
   @DeleteDateColumn({ type: 'timestamp with time zone' })
   @Exclude()
-  deletedAt: Date | null;
+  deletedAt: Date = new Date();
 
   @Column({ nullable: true })
   createdBy?: string;

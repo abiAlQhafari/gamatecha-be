@@ -21,6 +21,8 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
+  app.enableShutdownHooks(); 
+
   const config = new DocumentBuilder()
     .setTitle('Gamatecha API')
     .setDescription(

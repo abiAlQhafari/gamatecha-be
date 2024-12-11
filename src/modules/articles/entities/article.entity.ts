@@ -16,22 +16,22 @@ import { Category } from '../../categories/entities/category.entity';
 @Entity()
 export class Article extends BaseEntity {
   @Column({ nullable: false })
-  title: string;
+  title: string = '';
 
   @Column({ nullable: false })
-  slug: string;
+  slug: string = '';
 
   @Column({ nullable: false })
-  mediaUrl: string;
+  mediaUrl: string = '';
 
   @Column({ enum: ArticleStatus, default: ArticleStatus.ARCHIVED })
-  status: ArticleStatus;
+  status: ArticleStatus = ArticleStatus.ARCHIVED;
 
   @Column({ nullable: false })
-  content: string;
+  content: string = '';
 
   @Column({ nullable: true, type: 'timestamp with time zone' })
-  publishedAt: Date;
+  publishedAt: Date = new Date();
 
   @OneToOne(() => PostInstagram, (postInstagram) => postInstagram.article, {
     nullable: true,
@@ -39,7 +39,7 @@ export class Article extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn()
-  postInstagram: PostInstagram;
+  postInstagram: PostInstagram | null = null;
 
   @ManyToMany(() => Category, (category) => category.articles, {
     cascade: true,
@@ -47,11 +47,11 @@ export class Article extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   @JoinTable()
-  categories: Category[];
+  categories: Category[] | null = null;
 
   @BeforeInsert()
   @BeforeUpdate()
   async slugify() {
-    this.slug = this.title.toLowerCase().replace(/ /g, '-');
+    this.slug = this.title?.toLowerCase().replace(/ /g, '-') ?? '';
   }
 }

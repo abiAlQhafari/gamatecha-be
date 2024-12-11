@@ -28,13 +28,18 @@ import { plainToInstance } from 'class-transformer';
 import { FilteringUserInstagramDto } from './dto/filtering-user-instagram.dto';
 import { PathParameterDto } from '../../common/dto/path-parameter.dto';
 import { UpdateResult } from 'typeorm';
+import { ResponsePostInstagramDto } from '../post-instagram/dto/response-post-instagram.dto';
+import { PostInstagramService } from '../post-instagram/post-instagram.service';
 
 @Controller('user-instagram')
 @ApiTags('UserInstagram')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+// @UseGuards(JwtAuthGuard)
+// @ApiBearerAuth()
 export class UserInstagramController {
-  constructor(private readonly userInstagramService: UserInstagramService) {}
+  constructor(
+    private readonly userInstagramService: UserInstagramService,
+    private readonly postInstagramService: PostInstagramService,
+  ) {}
 
   @CreateSwaggerExample(
     CreateUserInstagramDto,
@@ -80,6 +85,27 @@ export class UserInstagramController {
         totalData: total,
         totalPage: Math.ceil(total / limit),
       },
+    };
+  }
+
+  @Get(':id/post-instagram')
+  @DetailSwaggerExample(
+    ResponseUserInstagramDto,
+    'Mengambil seluruh data Post Instagram dari User Instagram',
+  )
+  async findOnePostInstagram(
+    @Request() req: any,
+    @Param() pathParameter: PathParameterDto,
+  ): Promise<BaseSuccessResponse<ResponseUserInstagramDto>> {
+    const result = await this.userInstagramService.findOneBy({
+      where: { id: pathParameter.id },
+      relations: ['postInstagram'],
+    });
+
+    return {
+      data: plainToInstance(ResponseUserInstagramDto, result, {
+        excludeExtraneousValues: true,
+      }),
     };
   }
 

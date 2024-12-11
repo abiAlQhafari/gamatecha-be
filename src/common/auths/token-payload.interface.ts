@@ -1,6 +1,6 @@
 export interface TokenPayload {
-  id: number;
-  username: string;
-  fullname?: string;
-  isAdmin?: boolean;
+  id: number | null;
+  username: string | null;
+  fullname?: string | null;
+  isAdmin?: boolean | null;
 }

@@ -5,8 +5,8 @@ import { BaseEntity } from '../../../common/entity/base.entity';
 @Entity()
 export class MediaType extends BaseEntity {
   @Column()
-  name: string;
+  name: string = '';
 
   @OneToMany(() => PostInstagram, (postInstagram) => postInstagram.mediaType)
-  postInstagram: PostInstagram[];
+  postInstagram?: PostInstagram[];
 }

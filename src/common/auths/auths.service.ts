@@ -22,11 +22,11 @@ export class AuthsService {
   ) {}
 
   async validateUser(loginDefaultDto: LoginDefaultDto) {
-    let currentUser: User;
+    let currentUser: User | null = null;
     try {
       currentUser = await this.userService.findOneBy({
         where: {
-          username: loginDefaultDto.username,
+          username: loginDefaultDto.username || '',
         },
       });
     } catch (err) {}
@@ -58,9 +58,9 @@ export class AuthsService {
 
   async login(user: Partial<User>) {
     const payload: TokenPayload = {
-      id: user.id,
-      username: user.username,
-      isAdmin: user.isAdmin,
+      id: user.id || 0,
+      username: user.username || '',
+      isAdmin: user.isAdmin || false,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -87,13 +87,21 @@ export class AuthsService {
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
-    const refreshToken = refreshTokenDto.refreshToken;
+    const refreshToken = refreshTokenDto.refreshToken || '';
+
     const payload: TokenPayload = this.jwtService.verify(refreshToken, {
       secret: this.configService.get('JWT_SECRET_REFRESH'),
     });
 
+    if (payload.id === null) {
+      throw new UnauthorizedException(
+        'invalidToken',
+        'Token payload is invalid.',
+      );
+    }
     const user = await this.userService.findOne(payload.id);
-    return await this.login(user);
+
+    return await this.login(user ? user : {});
   }
 
   async validateToken(accessToken: string) {

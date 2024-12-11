@@ -26,7 +26,7 @@ export class BaseSuccessResponse<TData> {
 
   constructor(data: TData | TData[], meta?: BasePaginationResponse) {
     this.data = data;
-    this.meta = meta || null;
+    this.meta = meta || undefined;
   }
 }
 

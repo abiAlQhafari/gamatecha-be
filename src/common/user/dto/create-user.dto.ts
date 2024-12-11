@@ -13,17 +13,17 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  username: string;
+  username: string = '';
 
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email: string = '';
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  password: string;
+  password: string = '';
 
   // @Type(() => CreateUserExtendDto || UpdateUserExtendDto)
   // @IsOptional()

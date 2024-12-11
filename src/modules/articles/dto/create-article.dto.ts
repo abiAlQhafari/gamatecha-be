@@ -14,21 +14,21 @@ export class CreateArticleDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  title: string;
+  title: string | null = null;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsUrl()
-  mediaUrl: string;
+  mediaUrl: string | null = null;
 
   @ApiPropertyOptional()
   @IsEnum(ArticleStatus)
-  status?: ArticleStatus;
+  status?: ArticleStatus = ArticleStatus.ARCHIVED;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  content: string;
+  content: string | null = null;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -38,4 +38,8 @@ export class CreateArticleDto {
   @ApiPropertyOptional()
   @IsOptional()
   postInstagram_id?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  categories?: [string];
 }

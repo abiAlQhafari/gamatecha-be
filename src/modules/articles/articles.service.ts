@@ -42,6 +42,20 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
     await queryRunner.startTransaction();
 
     try {
+      const _createDto: any = Array.isArray(createArticleDto)
+        ? createArticleDto[0]
+        : createArticleDto;
+
+      const categoriesString = Array.isArray(createArticleDto)
+        ? createArticleDto[0].categories
+        : createArticleDto.categories;
+      const categories = categoriesString?.map((category) => {
+        return { name: category };
+      });
+
+      _createDto.categories = categories;
+
+
       const instances = await super.create(
         createArticleDto,
         user,

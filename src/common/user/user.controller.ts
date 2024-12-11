@@ -13,7 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
-import { BaseSuccessResponse } from 'src/common/response/base.response';
+import {
+  BaseExceptionResponse,
+  BaseSuccessResponse,
+} from 'src/common/response/base.response';
 import {
   CreateSwaggerExample,
   DeleteSwaggerExample,
@@ -28,6 +31,7 @@ import { ResponseUserDto } from './dto/response-user.dto';
 import { FilteringUserDto } from './dto/filtering-user.dto';
 import { User } from './entities/user.entity';
 import { PathParameterDto } from '../dto/path-parameter.dto';
+import { BadRequestException } from '../exception/types/bad-request.exception';
 
 @Controller('users')
 @ApiTags('User')
@@ -104,6 +108,11 @@ export class UserController {
     @Request() req: any,
     @Param() pathParameter: PathParameterDto,
   ): Promise<BaseSuccessResponse<ResponseUserDto>> {
+    if (typeof pathParameter.id !== 'number') {
+      throw new BadRequestException(
+        new BaseExceptionResponse('400', 'Invalid ID'),
+      );
+    }
     const result = await this.userService.findOne(pathParameter.id);
 
     return {

@@ -99,7 +99,7 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
 
       return await repo.save(instance);
     } catch (error) {
-      if (error.code == '23505') {
+      if ((error as any).code == '23505') {
         throw new BadRequestException(
           `${this.entitiesRepository.metadata.name} already exists`,
         );
@@ -168,7 +168,7 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
   async findOne(
     id: number,
     options?: FindOneOptions<TEntity>,
-  ): Promise<TEntity> {
+  ): Promise<TEntity | null> {
     return await this.entitiesRepository.findOne({
       where: { id },
       ...(options ?? {}),
@@ -209,7 +209,7 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
    * @returns The `findOneBy` method is returning a Promise that resolves to a single entity of type
    * `TEntity` based on the provided options using the `entitiesRepository.findOne` method.
    */
-  async findOneBy(options: FindOneOptions<TEntity>): Promise<TEntity> {
+  async findOneBy(options: FindOneOptions<TEntity>): Promise<TEntity | null> {
     const result = await this.entitiesRepository.findOne(options as any);
     return result;
   }
@@ -276,7 +276,7 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
       ? manager.getRepository(this.entitiesRepository.target)
       : this.entitiesRepository;
 
-    let entities: TEntity[];
+    let entities: TEntity[] = [];
 
     try {
       const optionsArray = Array.isArray(option) ? option : [option];
@@ -316,10 +316,12 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
     try {
       await repo.save(updatedEntities);
 
-      return await this.entitiesRepository.findOne({ where: option });
+      return (await this.entitiesRepository.findOne({ where: option })) || [];
     } catch (error) {
       this.handleError(error, 'update');
     }
+
+    return entities.length === 1 ? entities[0] : entities;
   }
 
   /**

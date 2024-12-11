@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const rawAccessToken = req.headers['authorization'].split('Bearer ')[1];
     const user = await this.userService.findOne(payload.id);
 
-    const accessTokenKeyCache = `accessToken_${user.id}`;
+    const accessTokenKeyCache = `accessToken_${user?.id}`;
     const getCache = await this.cacheManager.get(accessTokenKeyCache);
 
     if (!user) {

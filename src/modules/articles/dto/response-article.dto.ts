@@ -2,42 +2,49 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ResponsePostInstagramDto } from '../../post-instagram/dto/response-post-instagram.dto';
+import { ResponseCategoryDto } from '../../categories/dto/response-category.dto';
 
 export class ResponseArticleDto {
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  id: number;
+  id: number | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  title: string;
+  title: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  slug: string;
+  slug: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  mediaUrl: string;
+  mediaUrl: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  content: string;
+  content: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  status: string;
+  status: string | null = null;
 
   @Expose()
   @ApiProperty()
   @IsNotEmpty()
-  publishedAt: string;
+  publishedAt: string | null = null;
+
+  @Expose()
+  @ApiPropertyOptional({ type: () => [ResponseCategoryDto] })
+  @IsOptional()
+  @Type(() => ResponseCategoryDto)
+  categories?: ResponseCategoryDto[];
 
   @Expose()
   @ApiPropertyOptional({ type: () => ResponsePostInstagramDto })

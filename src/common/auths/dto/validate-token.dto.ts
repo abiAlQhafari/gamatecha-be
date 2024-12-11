@@ -4,5 +4,5 @@ import { IsString } from 'class-validator';
 export class ValidateTokenDto {
   @IsString()
   @ApiProperty()
-  accessToken: string;
+  accessToken: string | null = null;
 }

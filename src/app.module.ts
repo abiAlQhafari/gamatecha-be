@@ -15,6 +15,10 @@ import { MediaTypeModule } from './modules/media-type/media-type.module';
 import { PostInstagramModule } from './modules/post-instagram/post-instagram.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { PublicModule } from './modules/public/public.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ReporterModule } from 'nestjs-metrics-client';
 
 @Module({
   imports: [
@@ -23,6 +27,15 @@ import { CategoriesModule } from './modules/categories/categories.module';
       useFactory: async () => await typeOrmConfig(),
       inject: [],
     }),
+    PrometheusModule.register(),
+    // ReporterModule.forRoot({
+    //   // Default metrics are disabled by default, set to true to enable.
+    //   defaultMetricsEnabled: true,
+    //   defaultLabels: {
+    //     app: 'gamatecha-be',
+    //     environment: 'development',
+    //   },
+    // }),
     // BullModule.forRootAsync({
     //   imports: [ConfigModule],
     //   useFactory: async (configService: ConfigService) => ({
@@ -41,6 +54,8 @@ import { CategoriesModule } from './modules/categories/categories.module';
     PostInstagramModule,
     ArticlesModule,
     CategoriesModule,
+    StorageModule,
+    PublicModule,
   ],
   providers: [
     AppService,
