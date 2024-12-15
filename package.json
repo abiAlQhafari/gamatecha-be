@@ -44,6 +44,7 @@
     "cache-manager-redis-yet": "^5.1.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "nest-winston": "^1.9.7",
     "nestjs-metrics-client": "^1.5.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.13.1",
@@ -53,7 +54,8 @@
     "slugify": "^1.6.6",
     "typeorm": "^0.3.20",
     "typeorm-extension": "^3.6.3",
-    "typeorm-seeding": "^1.6.1"
+    "typeorm-seeding": "^1.6.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

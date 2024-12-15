@@ -19,6 +19,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { PublicModule } from './modules/public/public.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ReporterModule } from 'nestjs-metrics-client';
+import { WinstonModule } from 'nest-winston';
 
 @Module({
   imports: [
@@ -27,7 +28,6 @@ import { ReporterModule } from 'nestjs-metrics-client';
       useFactory: async () => await typeOrmConfig(),
       inject: [],
     }),
-    PrometheusModule.register(),
     // ReporterModule.forRoot({
     //   // Default metrics are disabled by default, set to true to enable.
     //   defaultMetricsEnabled: true,

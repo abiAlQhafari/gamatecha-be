@@ -12,6 +12,10 @@ export class ResponseUserInstagramDto {
   username: string | null = null;
 
   @Expose()
+  @ApiProperty()
+  profilePic: string | null = null;
+
+  @Expose()
   @ApiPropertyOptional()
   @Type(() => ResponsePostInstagramDto)
   postInstagram?: ResponsePostInstagramDto[];
