@@ -10,6 +10,8 @@ export class UserInstagram extends BaseEntity {
   @Column({ nullable: true })
   profilePic: string = '';
 
-  @OneToMany(() => PostInstagram, (postInstagram) => postInstagram.user)
+  @OneToMany(() => PostInstagram, (postInstagram) => postInstagram.user, {
+    nullable: true,
+  })
   postInstagram: PostInstagram[] | null = null;
 }

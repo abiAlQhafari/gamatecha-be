@@ -8,16 +8,21 @@ import {
   Delete,
   UseGuards,
   Request,
+  Req,
 } from '@nestjs/common';
 import { PostInstagramService } from './post-instagram.service';
 import { CreatePostInstagramDto } from './dto/create-post-instagram.dto';
 import { UpdatePostInstagramDto } from './dto/update-post-instagram.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/auths/jwt-auth.guard';
-import { CreateSwaggerExample } from '../../common/swagger/swagger-example.response';
+import {
+  CreateSwaggerExample,
+  DetailSwaggerExample,
+} from '../../common/swagger/swagger-example.response';
 import { ResponsePostInstagramDto } from './dto/response-post-instagram.dto';
 import { BaseSuccessResponse } from '../../common/response/base.response';
 import { plainToInstance } from 'class-transformer';
+import { ResponseArticleDto } from '../articles/dto/response-article.dto';
 
 @ApiTags('Post Instagram')
 @ApiBearerAuth()
@@ -48,26 +53,23 @@ export class PostInstagramController {
     };
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.postInstagramService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.postInstagramService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updatePostInstagramDto: UpdatePostInstagramDto,
-  // ) {
-  //   return this.postInstagramService.update(+id, updatePostInstagramDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.postInstagramService.remove(+id);
-  // }
+  @Get(':id/convert-to-article')
+  @DetailSwaggerExample(
+    ResponseArticleDto,
+    'Mengkonversi Post Instagram Menjadi Artikel',
+  )
+  async convertToArticle(
+    @Param('id') id: string,
+    @Req() req: any,
+  ): Promise<BaseSuccessResponse<ResponseArticleDto>> {
+    const result = await this.postInstagramService.convertToArticle(
+      +id,
+      req.user,
+    );
+    return {
+      data: plainToInstance(ResponseArticleDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
 }

@@ -32,7 +32,7 @@ import { QueryParameterArticleDto } from './dto/query-article.dto';
 
 @Controller('articles')
 @ApiTags('Articles')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}

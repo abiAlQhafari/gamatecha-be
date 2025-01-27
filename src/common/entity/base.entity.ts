@@ -21,9 +21,13 @@ export abstract class BaseEntity {
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date = new Date();
 
-  @DeleteDateColumn({ type: 'timestamp with time zone' })
+  @DeleteDateColumn({
+    type: 'timestamp with time zone',
+    nullable: true,
+    default: null,
+  })
   @Exclude()
-  deletedAt: Date = new Date();
+  deletedAt: Date | null = null;
 
   @Column({ nullable: true })
   createdBy?: string;

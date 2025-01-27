@@ -17,6 +17,10 @@ export class ResponseUserInstagramDto {
 
   @Expose()
   @ApiPropertyOptional()
+  totalPost?: number;
+
+  @Expose()
+  @ApiPropertyOptional()
   @Type(() => ResponsePostInstagramDto)
   postInstagram?: ResponsePostInstagramDto[];
 

@@ -48,6 +48,7 @@ export class PostInstagram extends BaseEntity {
     (userInstagram) => userInstagram.postInstagram,
     {
       cascade: true,
+      nullable: false,
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },

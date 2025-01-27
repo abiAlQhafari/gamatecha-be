@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional } from 'class-validator';
+import { ResponseArticleDto } from '../../articles/dto/response-article.dto';
 
 export class ResponseCategoryDto {
   @Expose()
@@ -15,6 +16,10 @@ export class ResponseCategoryDto {
 
   @Expose()
   @ApiPropertyOptional()
+  totalPost?: number;
+
+  @Expose()
+  @ApiPropertyOptional()
   @IsOptional()
   createdAt?: Date;
 
@@ -22,4 +27,9 @@ export class ResponseCategoryDto {
   @ApiPropertyOptional()
   @IsOptional()
   updatedAt?: Date;
+
+  @Expose()
+  @ApiPropertyOptional({ type: [ResponseArticleDto] })
+  @Type(() => ResponseArticleDto)
+  articles?: ResponseArticleDto[];
 }

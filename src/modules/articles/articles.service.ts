@@ -29,12 +29,12 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
     Default Relationship
   */
   defaultRelation() {
-    return [];
+    return ['categories', 'postInstagram'];
   }
 
   async create(
     createArticleDto: CreateArticleDto | CreateArticleDto[],
-    user: JwtPayloadDto,
+    user?: JwtPayloadDto,
     manager?: EntityManager,
   ): Promise<Article | Article[]> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
@@ -55,9 +55,8 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
 
       _createDto.categories = categories;
 
-
       const instances = await super.create(
-        createArticleDto,
+        _createDto,
         user,
         queryRunner.manager,
       );
@@ -83,15 +82,16 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
     } = options || {};
 
     const findOption: any = {};
-    findOption.where = [];
+    findOption.where = {};
 
     /*
       Search
     */
     if (search) {
-      findOption.where.push({
+      findOption.where = {
+        ...findOption.where,
         title: ILike(`%${search}%`),
-      });
+      };
     }
 
     /*
@@ -102,12 +102,14 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
       if (key.includes('_')) {
         const [relationName, relationKey] = key.split('_');
         condition[relationName] = { [relationKey]: value };
-        findOption.where.push(condition);
+        findOption.where = { ...findOption.where, ...condition };
       } else {
         condition[key] = value;
-        findOption.where.push(condition);
+        findOption.where = { ...findOption.where, ...condition };
       }
     });
+
+    console.log(findOption.where);
 
     findOption.relations = findOption.relations || this.defaultRelation();
 

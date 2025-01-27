@@ -33,8 +33,8 @@ import { PostInstagramService } from '../post-instagram/post-instagram.service';
 
 @Controller('user-instagram')
 @ApiTags('UserInstagram')
-// @UseGuards(JwtAuthGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UserInstagramController {
   constructor(
     private readonly userInstagramService: UserInstagramService,
@@ -45,7 +45,7 @@ export class UserInstagramController {
     CreateUserInstagramDto,
     ResponseUserInstagramDto,
     false,
-    'Membuat satu User Instagram',
+    'Membuat satu User Instagram Sekaligus Scraping Post Instagram',
   )
   @Post()
   async create(

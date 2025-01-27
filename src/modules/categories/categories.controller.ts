@@ -31,7 +31,7 @@ import { CategoriesService } from './categories.service';
 
 @Controller('categories')
 @ApiTags('Categories')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class CategoriesController {
   constructor(private readonly categoryService: CategoriesService) {}
@@ -99,6 +99,24 @@ export class CategoriesController {
         totalData: total,
         totalPage: Math.ceil(total / limit),
       },
+    };
+  }
+
+  @Get(':id/articles')
+  @DetailSwaggerExample(ResponseCategoryDto, 'Mengambil artikel satu Kategori')
+  async findOneWithArticles(
+    @Request() req: any,
+    @Param() pathParameter: PathParameterDto,
+  ): Promise<BaseSuccessResponse<ResponseCategoryDto>> {
+    const result = await this.categoryService.findOneBy({
+      where: { id: pathParameter.id },
+      relations: ['articles'],
+    });
+
+    return {
+      data: plainToInstance(ResponseCategoryDto, result, {
+        excludeExtraneousValues: true,
+      }),
     };
   }
 

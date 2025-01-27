@@ -31,7 +31,7 @@ export class CategoriesService extends BaseService<
     Default Relationship
   */
   defaultRelation() {
-    return [];
+    return ['articles'];
   }
 
   async create(
@@ -99,7 +99,7 @@ export class CategoriesService extends BaseService<
 
     findOption.relations = findOption.relations || this.defaultRelation();
 
-    return await super.findAndCount(
+    const [result, total] = await super.findAndCount(
       {
         limit: Number(limit),
         page: Number(page),
@@ -108,6 +108,12 @@ export class CategoriesService extends BaseService<
       },
       findOption,
     );
+
+    result.forEach((category: any) => {
+      category.totalPost = category.articles?.length;
+    });
+
+    return [result, total];
   }
 
   async update(

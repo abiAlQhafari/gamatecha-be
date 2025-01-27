@@ -41,5 +41,5 @@ export class CreateArticleDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  categories?: [string];
+  categories?: string[];
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { ResponsePublicCategoryDto } from './response-public-categories.dto';
 
 export class ResponseArticlePublic {
   @Expose()
@@ -34,9 +35,12 @@ export class ResponseArticlePublic {
   @Expose()
   postInstagram?: any | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: () => [ResponsePublicCategoryDto],
+  })
   @Expose()
-  categories: any[] | null = null;
+  @Type(() => ResponsePublicCategoryDto)
+  categories: ResponsePublicCategoryDto[] | null = null;
 
   @ApiProperty()
   @Expose()
