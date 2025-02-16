@@ -128,6 +128,10 @@ export class UserInstagramService extends BaseService<
           UserInstagramService.name,
         );
 
+        console.log('profilePictureResponse', profilePictureResponse);
+
+        console.log('profilePictureFile', profilePictureFile);
+
         profilePictureUrl = await this.storageService.uploadFile(
           profilePictureFile,
           'public-read',

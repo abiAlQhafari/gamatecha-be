@@ -124,30 +124,36 @@ export class ArticleService extends BaseService<Article, CreateArticleDto> {
     );
   }
 
-  async update(
-    pathParameter: FindOptionsWhere<Article>,
-    updateArticleDto: UpdateArticleDto,
-    user: JwtPayloadDto,
-    manager?: EntityManager,
-  ): Promise<Article> {
-    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  // async update(
+  //   pathParameter: FindOptionsWhere<Article>,
+  //   updateArticleDto: UpdateArticleDto,
+  //   user: JwtPayloadDto,
+  //   manager?: EntityManager,
+  // ): Promise<Article> {
+  //   const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
 
-    try {
-      const article = await this.findOneByOrFail(pathParameter);
+  //   try {
+  //     const article = await this.findOneByOrFail(pathParameter);
 
-      // Update properties of the article
-      Object.assign(article, updateArticleDto);
-      await queryRunner.manager.save(article);
+  //     console.log(article);
 
-      await queryRunner.commitTransaction();
-      return article;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+  //     const result = {
+  //       ...article,
+  //       ...updateArticleDto,
+  //     };
+  //     console.log(result);
+
+  //     await queryRunner.manager.getRepository(Article).save(result);
+
+  //     await queryRunner.commitTransaction();
+  //     return article;
+  //   } catch (error) {
+  //     await queryRunner.rollbackTransaction();
+  //     throw error;
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 }

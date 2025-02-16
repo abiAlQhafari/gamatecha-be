@@ -9,7 +9,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { PublicService } from './public.service';
-import { ListSwaggerExample } from '../../common/swagger/swagger-example.response';
+import {
+  DetailSwaggerExample,
+  ListSwaggerExample,
+} from '../../common/swagger/swagger-example.response';
 import { ResponseArticlePublic } from './dto/response-public-article.dto';
 import { QueryParameterDto } from '../../common/dto/query-parameter.dto';
 import { plainToInstance } from 'class-transformer';
@@ -37,6 +40,18 @@ export class PublicController {
         totalData: total,
         totalPage: Math.ceil(total / limit),
       },
+    };
+  }
+
+  @Get('articles/:slug')
+  @DetailSwaggerExample(ResponseArticlePublic, 'Detail of Articles')
+  async getOneArticles(@Param() param: { slug: string }) {
+    const result = await this.publicService.getOneArticles(param.slug);
+
+    return {
+      data: plainToInstance(ResponseArticlePublic, result, {
+        excludeExtraneousValues: true,
+      }),
     };
   }
 

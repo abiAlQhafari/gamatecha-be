@@ -12,23 +12,19 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateArticleDto {
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
-  title: string | null = null;
+  title: string = '';
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsUrl()
-  mediaUrl: string | null = null;
+  mediaUrl: string = '';
 
   @ApiPropertyOptional()
   @IsEnum(ArticleStatus)
   status?: ArticleStatus = ArticleStatus.ARCHIVED;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
-  content: string | null = null;
+  content: string = '';
 
   @ApiPropertyOptional()
   @IsOptional()

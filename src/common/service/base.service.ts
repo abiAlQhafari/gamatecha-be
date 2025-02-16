@@ -276,7 +276,7 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
       ? manager.getRepository(this.entitiesRepository.target)
       : this.entitiesRepository;
 
-    let entities: TEntity[] = [];
+    let entities: TEntity[];
 
     try {
       const optionsArray = Array.isArray(option) ? option : [option];
@@ -294,13 +294,23 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
 
     const mappedDto = Array.isArray(updateDto) ? updateDto : [updateDto];
     mappedDto.forEach((dto) => {
-      Object.keys(dto).forEach((key) => {
-        if (key.includes('id')) {
-          const entityName = key.split('_')[0];
-          dto[entityName] = { id: dto[key] };
-          delete dto[key];
-        }
-      });
+      if (Object.keys(dto).some((key) => key.includes('_'))) {
+        const relations = Object.keys(dto).filter((key) => key.includes('_'));
+        relations.forEach((relationKey) => {
+          const [entityName, columnName] = relationKey.split('_');
+          const relationValues = dto[relationKey];
+
+          if (Array.isArray(relationValues)) {
+            dto[entityName] = relationValues.map((id) => ({ id }));
+          } else {
+            dto[entityName] = {
+              [columnName]: dto[relationKey],
+            };
+          }
+
+          delete dto[relationKey];
+        });
+      }
     });
 
     const updatedEntities: TEntity[] = entities
@@ -316,12 +326,10 @@ export abstract class BaseService<TEntity extends BaseEntity, TCreate> {
     try {
       await repo.save(updatedEntities);
 
-      return (await this.entitiesRepository.findOne({ where: option })) || [];
+      return await this.entitiesRepository.findOne({ where: option });
     } catch (error) {
       this.handleError(error, 'update');
     }
-
-    return entities.length === 1 ? entities[0] : entities;
   }
 
   /**

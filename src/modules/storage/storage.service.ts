@@ -6,6 +6,7 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { timeout } from 'rxjs';
 import slugify from 'slugify';
 
 @Injectable()
