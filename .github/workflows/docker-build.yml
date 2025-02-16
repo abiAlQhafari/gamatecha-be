@@ -22,7 +22,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          ORGANIZATION=abiAlQhafari
+          ORGANIZATION=abialqhafari
           REPOSITORY=gamatecha-be
           IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
           # Tentukan tag berdasarkan branch yang digunakan
@@ -39,7 +39,7 @@ jobs:
           docker build . -t $IMAGE_NAME:${TAG_NAME}
       - name: Push Docker image with version tag
         run: |
-          ORGANIZATION=abiAlQhafari
+          ORGANIZATION=abialqhafari
           REPOSITORY=gamatecha-be
           IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
           # Tentukan tag berdasarkan branch yang digunakan
