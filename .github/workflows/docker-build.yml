@@ -1,56 +1,58 @@
-name: Docker Build and Push
+  name: Docker Build and Push
 
-on:
-  push:
-    tags:
-      - '*'
-    branches:
-      - dev
-      - staging
-      - main
+  on:
+    push:
+      tags:
+        - '*'
+      branches:
+        - dev
+        - staging
+        - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      permissions:
+        packages: write
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        - name: Log in to GitHub Container Registry
+          run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image
-        run: |
-          ORGANIZATION=abialqhafari
-          REPOSITORY=gamatecha-be
-          IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
-          # Tentukan tag berdasarkan branch yang digunakan
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            TAG_NAME="dev"
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            TAG_NAME="staging"
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            TAG_NAME="latest"
-          else
-            TAG_NAME=$(echo ${{ github.ref }} | sed 's/refs\/tags\///')
-          fi
-          echo "Building Docker image: $IMAGE_NAME:${TAG_NAME}"
-          docker build . -t $IMAGE_NAME:${TAG_NAME}
-      - name: Push Docker image with version tag
-        run: |
-          ORGANIZATION=abialqhafari
-          REPOSITORY=gamatecha-be
-          IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
-          # Tentukan tag berdasarkan branch yang digunakan
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            TAG_NAME="dev"
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            TAG_NAME="staging"
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            TAG_NAME="latest"
-          else
-            TAG_NAME=$(echo ${{ github.ref }} | sed 's/refs\/tags\///')
-          fi
-          echo "Pushing Docker image with tag: ${TAG_NAME}"
-          docker push $IMAGE_NAME:${TAG_NAME}
+        - name: Build Docker image
+          run: |
+            ORGANIZATION=abialqhafari
+            REPOSITORY=gamatecha-be
+            IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
+            # Tentukan tag berdasarkan branch yang digunakan
+            if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+              TAG_NAME="dev"
+            elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+              TAG_NAME="staging"
+            elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              TAG_NAME="latest"
+            else
+              TAG_NAME=$(echo ${{ github.ref }} | sed 's/refs\/tags\///')
+            fi
+            echo "Building Docker image: $IMAGE_NAME:${TAG_NAME}"
+            docker build . -t $IMAGE_NAME:${TAG_NAME}
+        - name: Push Docker image with version tag
+          run: |
+            ORGANIZATION=abialqhafari
+            REPOSITORY=gamatecha-be
+            IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
+            # Tentukan tag berdasarkan branch yang digunakan
+            if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+              TAG_NAME="dev"
+            elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+              TAG_NAME="staging"
+            elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              TAG_NAME="latest"
+            else
+              TAG_NAME=$(echo ${{ github.ref }} | sed 's/refs\/tags\///')
+            fi
+            echo "Pushing Docker image with tag: ${TAG_NAME}"
+            docker push $IMAGE_NAME:${TAG_NAME}
