@@ -57,3 +57,30 @@
             fi
             echo "Pushing Docker image with tag: ${TAG_NAME}"
             docker push $IMAGE_NAME:${TAG_NAME}
+
+    deploy:
+      needs: build  # Hanya jalan setelah build selesai
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Deploy via SSH
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.SERVER_IP }}
+            username: ${{ secrets.SERVER_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            script: |
+              ORGANIZATION=abialqhafari
+              REPOSITORY=gamatecha-be
+              IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
+              TAG_NAME="latest"
+
+              echo "Pulling latest Docker image..."
+              docker pull $IMAGE_NAME:${TAG_NAME}
+
+              echo "Stopping old container..."
+              docker stop gamatecha-be || true
+              docker rm gamatecha-be || true
+
+              echo "Running new container..."
+              docker run -d --name gamatecha-be -p 3000:3000 --restart always $IMAGE_NAME:${TAG_NAME}
