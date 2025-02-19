@@ -83,4 +83,4 @@
               docker rm gamatecha-be || true
 
               echo "Running new container..."
-              docker run -d --name gamatecha-be -p 3000:3000 --restart always $IMAGE_NAME:${TAG_NAME}
+              docker run -d --name gamatecha-be -p 3001:3001 --restart always $IMAGE_NAME:${TAG_NAME}
