@@ -57,6 +57,6 @@ COPY . .
 RUN pnpm run build
 RUN chmod +x ./run.sh
 
-EXPOSE 3000
+EXPOSE 3001
 
 CMD ["./run.sh"]
