@@ -6,12 +6,14 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entity/base.entity';
 import { ArticleStatus } from '../../../common/enum/status.enum';
 import { PostInstagram } from '../../post-instagram/entities/post-instagram.entity';
 import { Category } from '../../categories/entities/category.entity';
+import { ArticleView } from '../../article-views/entities/article-view.entity';
 
 @Entity()
 export class Article extends BaseEntity {
@@ -48,6 +50,9 @@ export class Article extends BaseEntity {
   })
   @JoinTable()
   categories: Category[] | null = null;
+
+  @OneToMany(() => ArticleView, (articleView) => articleView.article)
+  articleViews: ArticleView[];
 
   @BeforeInsert()
   @BeforeUpdate()

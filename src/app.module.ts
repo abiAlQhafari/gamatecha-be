@@ -18,6 +18,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { PublicModule } from './modules/public/public.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { ArticleViewsModule } from './modules/article-views/article-views.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
     CategoriesModule,
     StorageModule,
     PublicModule,
+    ArticleViewsModule,
   ],
   providers: [
     AppService,

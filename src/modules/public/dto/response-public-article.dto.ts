@@ -44,6 +44,10 @@ export class ResponseArticlePublic {
 
   @ApiProperty()
   @Expose()
+  totalViewers: number;
+
+  @ApiProperty()
+  @Expose()
   createdAt: Date | null = null;
 
   @ApiProperty()

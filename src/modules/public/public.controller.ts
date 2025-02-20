@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Request,
 } from '@nestjs/common';
 import { PublicService } from './public.service';
 import {
@@ -19,6 +20,7 @@ import { plainToInstance } from 'class-transformer';
 import { ResponsePublicCategoryDto } from './dto/response-public-categories.dto';
 import { BaseSuccessResponse } from '../../common/response/base.response';
 import { FilteringArticle } from './dto/filtering-article.dto';
+import { QueryParameterArticleDto } from '../articles/dto/query-article.dto';
 
 @Controller('public')
 export class PublicController {
@@ -45,8 +47,11 @@ export class PublicController {
 
   @Get('articles/:slug')
   @DetailSwaggerExample(ResponseArticlePublic, 'Detail of Articles')
-  async getOneArticles(@Param() param: { slug: string }) {
-    const result = await this.publicService.getOneArticles(param.slug);
+  async getOneArticles(
+    @Param() param: QueryParameterArticleDto,
+    @Request() req: any,
+  ) {
+    const result = await this.publicService.getOneArticles(param.slug, req);
 
     return {
       data: plainToInstance(ResponseArticlePublic, result, {

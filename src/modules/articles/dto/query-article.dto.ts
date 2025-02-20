@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class QueryParameterArticleDto {
   @ApiProperty()
-  slug: string | undefined = undefined;
+  @IsNotEmpty()
+  @IsString()
+  slug: string;
 }

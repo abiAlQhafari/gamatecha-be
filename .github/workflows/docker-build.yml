@@ -73,7 +73,7 @@
               ORGANIZATION=abialqhafari
               REPOSITORY=gamatecha-be
               IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
-              TAG_NAME="latest"
+              TAG_NAME="dev"
 
               echo "Pulling latest Docker image..."
               docker pull $IMAGE_NAME:${TAG_NAME}
