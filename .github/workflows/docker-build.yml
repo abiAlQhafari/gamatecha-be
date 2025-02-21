@@ -82,5 +82,16 @@
               docker stop gamatecha-be || true
               docker rm gamatecha-be || true
 
-              echo "Running new container..."
-              docker run -d --name gamatecha-be -p 3001:3001 --restart always $IMAGE_NAME:${TAG_NAME}
+              docker run -d \
+                --name gamatecha-be \
+                -p 3001:3001 \
+                --restart always \
+                --env-file ./.env \
+                --network bridge \
+                $IMAGE_NAME:${TAG_NAME}
+
+              # Add verification steps
+              echo "Verifying container status..."
+              docker ps | grep gamatecha-be
+              echo "Checking container logs..."
+              docker logs gamatecha-be
