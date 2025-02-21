@@ -74,6 +74,7 @@
               REPOSITORY=gamatecha-be
               IMAGE_NAME=ghcr.io/${ORGANIZATION}/${REPOSITORY}
               TAG_NAME="dev"
+              ENV_FILE="/root/gamatecha-be/.env"
 
               echo "Pulling latest Docker image..."
               docker pull $IMAGE_NAME:${TAG_NAME}
@@ -86,7 +87,7 @@
                 --name gamatecha-be \
                 -p 3001:3001 \
                 --restart always \
-                --env-file .env \
+                --env-file $ENV_FILE \
                 --network bridge \
                 $IMAGE_NAME:${TAG_NAME}
 
