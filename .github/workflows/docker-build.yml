@@ -86,7 +86,7 @@
                 --name gamatecha-be \
                 -p 3001:3001 \
                 --restart always \
-                --env-file ./.env \
+                --env-file .env \
                 --network bridge \
                 $IMAGE_NAME:${TAG_NAME}
 
