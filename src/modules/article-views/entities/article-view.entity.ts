@@ -10,7 +10,7 @@ import { Article } from '../../articles/entities/article.entity';
 import { BaseEntity } from '../../../common/entity/base.entity';
 
 @Entity()
-@Index(['ipAddr', 'userAgent'], { unique: true }) // Membantu mencegah duplikasi
+@Index(['ipAddr', 'userAgent', 'article'], { unique: true })
 export class ArticleView extends BaseEntity {
   @ManyToOne(() => Article, (article) => article.articleViews, {
     onDelete: 'CASCADE',

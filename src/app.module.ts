@@ -19,6 +19,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { PublicModule } from './modules/public/public.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ArticleViewsModule } from './modules/article-views/article-views.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ArticleViewsModule } from './modules/article-views/article-views.module
     StorageModule,
     PublicModule,
     ArticleViewsModule,
+    DashboardModule,
   ],
   providers: [
     AppService,

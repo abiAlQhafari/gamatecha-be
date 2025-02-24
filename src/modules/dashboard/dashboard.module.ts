@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { DashboardService } from './dashboard.service';
+import { DashboardController } from './dashboard.controller';
+import { ArticlesModule } from '../articles/articles.module';
+import { ArticleViewsModule } from '../article-views/article-views.module';
+import { UserInstagramModule } from '../user-instagram/user-instagram.module';
+
+@Module({
+  imports: [ArticlesModule, ArticleViewsModule, UserInstagramModule],
+  controllers: [DashboardController],
+  providers: [DashboardService],
+})
+export class DashboardModule {}

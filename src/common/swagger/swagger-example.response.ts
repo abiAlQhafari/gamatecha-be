@@ -89,10 +89,10 @@ function errorSchema(type: string, errors?: any | any[]): SchemaObject {
   };
 }
 
-export function listSuccessResponse(data: Model) {
+export function listSuccessResponse(data: Model, isMeta?: boolean) {
   return ApiOkResponse({
     description: 'Success',
-    schema: successSchema(data, true, true),
+    schema: successSchema(data, true, isMeta),
   });
 }
 
@@ -240,11 +240,15 @@ export function basicError() {
   );
 }
 
-export function ListSwaggerExample(data: Model, message: string) {
+export function ListSwaggerExample(
+  data: Model,
+  message: string,
+  meta?: boolean,
+) {
   return applyDecorators(
     ApiOperation({ summary: message }),
     ApiExtraModels(data),
-    listSuccessResponse(data),
+    listSuccessResponse(data, meta),
     basicError(),
   );
 }

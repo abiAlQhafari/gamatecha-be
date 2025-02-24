@@ -40,6 +40,7 @@ export class AuthsService {
       loginDefaultDto.password,
       currentUser.password,
     );
+
     if (!isMatch) {
       throw new UnauthorizedException(
         'invalidCredential',
@@ -64,6 +65,7 @@ export class AuthsService {
     };
 
     const accessToken = this.jwtService.sign(payload);
+
     const refreshToken = await this.generateRefreshToken(payload);
 
     const accessTokenKeyCache = `accessToken_${user.id}`;
