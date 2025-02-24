@@ -96,3 +96,6 @@
               docker ps | grep gamatecha-be
               echo "Checking container logs..."
               docker logs gamatecha-be
+
+              # Delete unused images
+              docker rmi -f $(docker image ls -q -f "dangling=true")
