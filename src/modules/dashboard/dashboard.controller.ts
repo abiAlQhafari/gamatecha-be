@@ -34,6 +34,22 @@ export class DashboardController {
     };
   }
 
+  @Get('total-post-instagram')
+  @DetailSwaggerExample(
+    ResponseTotalDashboardDto,
+    'Mengambil total postingan Instagram yang ada',
+  )
+  async getTotalPostInstagram(): Promise<
+    BaseSuccessResponse<ResponseTotalDashboardDto>
+  > {
+    const total = await this.dashboardService.getTotalPostInstagram();
+    return {
+      data: plainToInstance(ResponseTotalDashboardDto, total, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
+
   @Get('total-user-instagram')
   @DetailSwaggerExample(
     ResponseTotalDashboardDto,

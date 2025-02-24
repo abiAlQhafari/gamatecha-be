@@ -6,6 +6,7 @@ import { ArticleStatus } from '../../common/enum/status.enum';
 import { DataSource } from 'typeorm';
 import { ArticleView } from '../article-views/entities/article-view.entity';
 import { startOfMonth, endOfMonth } from 'date-fns';
+import { PostInstagramService } from '../post-instagram/post-instagram.service';
 
 @Injectable()
 export class DashboardService {
@@ -14,6 +15,7 @@ export class DashboardService {
     private readonly articleService: ArticleService,
     private readonly articleViewsService: ArticleViewsService,
     private readonly userInstagramService: UserInstagramService,
+    private readonly postInstagramService: PostInstagramService,
   ) {}
 
   async getTotalArticle(): Promise<number> {
@@ -26,6 +28,10 @@ export class DashboardService {
 
   async getTotalUserInstagram(): Promise<number> {
     return this.userInstagramService.count();
+  }
+
+  async getTotalPostInstagram(): Promise<number> {
+    return this.postInstagramService.count();
   }
 
   async getChartArticleViews(): Promise<{ name: string; value: number }[]> {
