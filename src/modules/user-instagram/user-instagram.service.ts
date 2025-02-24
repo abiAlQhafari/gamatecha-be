@@ -47,34 +47,17 @@ export class UserInstagramService extends BaseService<
     return ['postInstagram'];
   }
 
-  async create(
-    createUserInstagramDto: CreateUserInstagramDto | CreateUserInstagramDto[],
-    user: JwtPayloadDto,
-    manager?: EntityManager,
-  ): Promise<any> {
-    this.logger.log(
-      `SCRAPE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-      UserInstagramService.name,
-    );
+  private getUsername(
+    dto: CreateUserInstagramDto | CreateUserInstagramDto[],
+  ): string {
+    return Array.isArray(dto) ? dto[0].username : dto.username;
+  }
 
-    this.logger.log(
-      `CHECK USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-      UserInstagramService.name,
-    );
-
-    let userInstagramInstance = await this.repository.findOne({
-      where: {
-        username: Array.isArray(createUserInstagramDto)
-          ? createUserInstagramDto[0].username
-          : createUserInstagramDto.username,
-      },
-      relations: ['postInstagram'],
-    });
-
-    const scrapePosts = await firstValueFrom(
+  private async scrapeInstagramPosts(username: string) {
+    return firstValueFrom(
       this.httpService
         .get(
-          `https://instagram-scraper-api2.p.rapidapi.com/v1.2/posts?username_or_id_or_url=${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
+          `https://instagram-scraper-api2.p.rapidapi.com/v1.2/posts?username_or_id_or_url=${username}`,
           {
             headers: {
               'x-rapidapi-host': 'instagram-scraper-api2.p.rapidapi.com',
@@ -89,286 +72,236 @@ export class UserInstagramService extends BaseService<
           }),
         ),
     );
-
-    if (scrapePosts.status === 200) {
-      let profilePictureUrl = '';
-
-      if (!userInstagramInstance) {
-        this.logger.log(
-          `CREATE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-          UserInstagramService.name,
-        );
-
-        this.logger.log(
-          `DOWNLOAD PROFILE PICTURE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-          UserInstagramService.name,
-        );
-        // Create UserInstagram
-        const profilePictureResponse = await this.httpService.axiosRef({
-          method: 'get',
-          url: scrapePosts.data.data.user.profile_pic_url,
-          responseType: 'arraybuffer',
-        });
-
-        const profilePictureFile: Express.Multer.File = {
-          fieldname: 'file',
-          originalname: `profile-picture-${scrapePosts.data.data.user.username}.jpg`,
-          encoding: '7bit',
-          mimetype: profilePictureResponse.headers['content-type'],
-          size: Buffer.byteLength(profilePictureResponse.data),
-          buffer: Buffer.from(profilePictureResponse.data),
-          stream: Readable.from(profilePictureResponse.data),
-          destination: '',
-          path: '',
-          filename: '',
-        };
-
-        this.logger.log(
-          `UPLOAD PROFILE PICTURE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-          UserInstagramService.name,
-        );
-
-        console.log('profilePictureResponse', profilePictureResponse);
-
-        console.log('profilePictureFile', profilePictureFile);
-
-        profilePictureUrl = await this.storageService.uploadFile(
-          profilePictureFile,
-          'public-read',
-        );
-      } else {
-        profilePictureUrl = userInstagramInstance.profilePic;
-      }
-
-      let postInstagrams: Partial<PostInstagram>[] = [];
-
-      for (const post of scrapePosts.data.data.items) {
-        this.logger.log(
-          `CHECK POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username} - ${post.code}`,
-          UserInstagramService.name,
-        );
-
-        const postInstagramInstance = await this.dataSource
-          .getRepository(PostInstagram)
-          .findOne({
-            where: {
-              code: post.code,
-            },
-          });
-
-        if (postInstagramInstance) {
-          this.logger.log(
-            `POST INSTAGRAM ALREADY EXIST: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username} - ${post.code}`,
-            UserInstagramService.name,
-          );
-          continue;
-        }
-
-        this.logger.log(
-          `SCRAPE POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username} - ${post.code}`,
-          UserInstagramService.name,
-        );
-        this.logger.log(
-          `DOWNLOAD THUMBNAIL POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username} - ${post.code}`,
-          UserInstagramService.name,
-        );
-        const thumbnailPostUrl =
-          post.thumbnail_url !== 'None'
-            ? post.thumbnail_url
-            : post.resources[0].thumbnail_url;
-
-        const thumbnailResponse = await this.httpService
-          .axiosRef({
-            method: 'get',
-            url: thumbnailPostUrl,
-            responseType: 'arraybuffer',
-          })
-          .catch((error: AxiosError) => {
-            this.logger.error(
-              `ERROR DOWNLOAD THUMBNAIL POST: ${post.code}`,
-              error,
-            );
-            throw error;
-          });
-
-        const thumbnailFile: Express.Multer.File = {
-          fieldname: 'file',
-          originalname: `thumbnail-${post.code}.jpg`,
-          encoding: '7bit',
-          mimetype: thumbnailResponse.headers['content-type'],
-          size: Buffer.byteLength(thumbnailResponse.data),
-          buffer: Buffer.from(thumbnailResponse.data),
-          stream: Readable.from(thumbnailResponse.data),
-          destination: '',
-          filename: '',
-          path: '',
-        };
-
-        const thumbnailUrl = await this.storageService.uploadFile(
-          thumbnailFile,
-          'public-read',
-        );
-
-        this.logger.log(
-          `CREATE POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username} - ${post.code}`,
-          UserInstagramService.name,
-        );
-
-        const caption = post.caption_text
-          ? post.caption_text
-          : post.caption?.text
-            ? post.caption?.text
-            : '';
-        const postInstagram: Partial<PostInstagram> = {
-          code: post.code,
-          instagramId: post.id,
-          instagramPk: post.pk ? post.pk : post.id,
-          takenAt:
-            typeof post.taken_at === 'number' && post.taken_at > 0
-              ? new Date(post.taken_at * 1000)
-              : typeof post.taken_at === 'string' &&
-                  !isNaN(Date.parse(post.taken_at))
-                ? new Date(post.taken_at)
-                : new Date(),
-          caption: caption,
-          thumbnailUrl: thumbnailUrl,
-          mediaUrl: thumbnailUrl,
-          postUrl: 'https://www.instagram.com/p/' + post.code,
-        };
-
-        postInstagrams.push(postInstagram);
-      }
-
-      await this.dataSource.transaction(async (manager) => {
-        if (userInstagramInstance) {
-          this.logger.log(
-            `UPDATE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-            UserInstagramService.name,
-          );
-          const updatedUser = await manager.getRepository(UserInstagram).save({
-            ...userInstagramInstance,
-            profilePic: profilePictureUrl,
-          });
-
-          if (postInstagrams.length === 0) {
-            return;
-          }
-
-          this.logger.log(
-            `INSERT POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-            UserInstagramService.name,
-          );
-
-          await manager.getRepository(PostInstagram).save(
-            postInstagrams.map((post) => ({
-              ...post,
-              user: {
-                id: updatedUser.id,
-              },
-            })),
-          );
-        } else {
-          this.logger.log(
-            `INSERT USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-            UserInstagramService.name,
-          );
-          userInstagramInstance = await manager
-            .getRepository(UserInstagram)
-            .save({
-              ...createUserInstagramDto,
-              profilePic: profilePictureUrl,
-              postInstagram: postInstagrams,
-            });
-
-          this.logger.log(
-            `INSERT POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
-            UserInstagramService.name,
-          );
-
-          await manager.getRepository(PostInstagram).save(
-            postInstagrams.map((post) => ({
-              ...post,
-              user: userInstagramInstance,
-            })),
-          );
-        }
-      });
-
-      this.logger.log('DONE SCRAPE USER INSTAGRAM', UserInstagramService.name);
-
-      const result = await this.repository.findOne({
-        where: {
-          username: userInstagramInstance?.username,
-        },
-        relations: ['postInstagram'],
-      });
-
-      const _result: any = {
-        ...result,
-        totalPost: result?.postInstagram?.length,
-      };
-
-      delete _result.postInstagram;
-
-      return _result;
-    } else {
-      throw new NotFoundException('User instagram not found');
-    }
   }
 
-  async findAndCount(options?: any): Promise<[UserInstagram[], number]> {
-    const {
-      limit = 10,
-      page = 1,
-      orderBy,
-      orderDirection,
-      search,
-      ...query
-    } = options || {};
-    const findOption: any = {};
-    findOption.where = [];
+  private async downloadAndUploadProfilePicture(
+    profilePicUrl: string,
+    username: string,
+  ): Promise<string> {
+    const profilePictureResponse = await this.httpService.axiosRef({
+      method: 'get',
+      url: profilePicUrl,
+      responseType: 'arraybuffer',
+    });
 
-    /*
-      Search
-    */
-    if (search) {
-      findOption.where.push({
-        username: ILike(`%${search}%`),
+    const profilePictureFile: Express.Multer.File = {
+      fieldname: 'file',
+      originalname: `profile-picture-${username}.jpg`,
+      encoding: '7bit',
+      mimetype: profilePictureResponse.headers['content-type'],
+      size: Buffer.byteLength(profilePictureResponse.data),
+      buffer: Buffer.from(profilePictureResponse.data),
+      stream: Readable.from(profilePictureResponse.data),
+      destination: '',
+      path: '',
+      filename: '',
+    };
+
+    return this.storageService.uploadFile(profilePictureFile, 'public-read');
+  }
+
+  private async downloadAndUploadThumbnail(
+    thumbnailUrl: string,
+    postCode: string,
+  ): Promise<string> {
+    const thumbnailResponse = await this.httpService
+      .axiosRef({
+        method: 'get',
+        url: thumbnailUrl,
+        responseType: 'arraybuffer',
+      })
+      .catch((error: AxiosError) => {
+        this.logger.error(`ERROR DOWNLOAD THUMBNAIL POST: ${postCode}`, error);
+        throw error;
       });
+
+    const thumbnailFile: Express.Multer.File = {
+      fieldname: 'file',
+      originalname: `thumbnail-${postCode}.jpg`,
+      encoding: '7bit',
+      mimetype: thumbnailResponse.headers['content-type'],
+      size: Buffer.byteLength(thumbnailResponse.data),
+      buffer: Buffer.from(thumbnailResponse.data),
+      stream: Readable.from(thumbnailResponse.data),
+      destination: '',
+      filename: '',
+      path: '',
+    };
+
+    return this.storageService.uploadFile(thumbnailFile, 'public-read');
+  }
+
+  private async processPost(
+    post: any,
+    username: string,
+  ): Promise<Partial<PostInstagram> | null> {
+    this.logger.log(
+      `CHECK POST INSTAGRAM: ${username} - ${post.code}`,
+      UserInstagramService.name,
+    );
+
+    const existingPost = await this.dataSource
+      .getRepository(PostInstagram)
+      .findOne({
+        where: { code: post.code },
+      });
+
+    if (existingPost) {
+      this.logger.log(
+        `POST INSTAGRAM ALREADY EXIST: ${username} - ${post.code}`,
+        UserInstagramService.name,
+      );
+      return null;
     }
 
-    /*
-      Filtering
-    */
-    Object.entries(query).forEach(([key, value]) => {
-      const condition: any = {};
-      if (key.includes('_')) {
-        const [relationName, relationKey] = key.split('_');
-        condition[relationName] = { [relationKey]: value };
-        findOption.where.push(condition);
+    const thumbnailPostUrl =
+      post.thumbnail_url !== 'None'
+        ? post.thumbnail_url
+        : post.resources[0].thumbnail_url;
+
+    const thumbnailUrl = await this.downloadAndUploadThumbnail(
+      thumbnailPostUrl,
+      post.code,
+    );
+
+    const caption = post.caption_text
+      ? post.caption_text
+      : post.caption?.text
+        ? post.caption?.text
+        : '';
+
+    return {
+      code: post.code,
+      instagramId: post.id,
+      instagramPk: post.pk ? post.pk : post.id,
+      takenAt: this.parseTakenAt(post.taken_at),
+      caption: caption,
+      thumbnailUrl: thumbnailUrl,
+      mediaUrl: thumbnailUrl,
+      postUrl: 'https://www.instagram.com/p/' + post.code,
+    };
+  }
+
+  private parseTakenAt(takenAt: number | string): Date {
+    if (typeof takenAt === 'number' && takenAt > 0) {
+      return new Date(takenAt * 1000);
+    }
+    if (typeof takenAt === 'string' && !isNaN(Date.parse(takenAt))) {
+      return new Date(takenAt);
+    }
+    return new Date();
+  }
+
+  async create(
+    createUserInstagramDto: CreateUserInstagramDto | CreateUserInstagramDto[],
+    user: JwtPayloadDto,
+    manager?: EntityManager,
+  ): Promise<any> {
+    const username = this.getUsername(createUserInstagramDto);
+    this.logger.log(
+      `SCRAPE USER INSTAGRAM: ${username}`,
+      UserInstagramService.name,
+    );
+
+    let userInstagramInstance = await this.repository.findOne({
+      where: { username },
+      relations: ['postInstagram'],
+    });
+
+    const scrapePosts = await this.scrapeInstagramPosts(username);
+
+    if (scrapePosts.status !== 200) {
+      throw new NotFoundException('User instagram not found');
+    }
+
+    let profilePictureUrl = userInstagramInstance?.profilePic;
+
+    if (!userInstagramInstance) {
+      profilePictureUrl = await this.downloadAndUploadProfilePicture(
+        scrapePosts.data.data.user.profile_pic_url,
+        username,
+      );
+    }
+
+    const postInstagrams: Partial<PostInstagram>[] = [];
+    for (const post of scrapePosts.data.data.items) {
+      const processedPost = await this.processPost(post, username);
+      if (processedPost) {
+        postInstagrams.push(processedPost);
+      }
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      if (userInstagramInstance) {
+        this.logger.log(
+          `UPDATE USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
+          UserInstagramService.name,
+        );
+        const updatedUser = await manager.getRepository(UserInstagram).save({
+          ...userInstagramInstance,
+          profilePic: profilePictureUrl,
+        });
+
+        if (postInstagrams.length === 0) {
+          return;
+        }
+
+        this.logger.log(
+          `INSERT POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
+          UserInstagramService.name,
+        );
+
+        await manager.getRepository(PostInstagram).save(
+          postInstagrams.map((post) => ({
+            ...post,
+            user: {
+              id: updatedUser.id,
+            },
+          })),
+        );
       } else {
-        condition[key] = value;
-        findOption.where.push(condition);
+        this.logger.log(
+          `INSERT USER INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
+          UserInstagramService.name,
+        );
+        userInstagramInstance = await manager
+          .getRepository(UserInstagram)
+          .save({
+            ...createUserInstagramDto,
+            profilePic: profilePictureUrl,
+            postInstagram: postInstagrams,
+          });
+
+        this.logger.log(
+          `INSERT POST INSTAGRAM: ${Array.isArray(createUserInstagramDto) ? createUserInstagramDto[0].username : createUserInstagramDto.username}`,
+          UserInstagramService.name,
+        );
+
+        await manager.getRepository(PostInstagram).save(
+          postInstagrams.map((post) => ({
+            ...post,
+            user: userInstagramInstance,
+          })),
+        );
       }
     });
 
-    findOption.relations = findOption.relations || this.defaultRelation();
+    this.logger.log('DONE SCRAPE USER INSTAGRAM', UserInstagramService.name);
 
-    const [result, total] = await super.findAndCount(
-      {
-        limit: Number(limit),
-        page: Number(page),
-        orderBy: orderBy,
-        orderDirection: orderDirection,
+    const result = await this.repository.findOne({
+      where: {
+        username: userInstagramInstance?.username,
       },
-      findOption,
-    );
-
-    result.forEach((user: any) => {
-      user.totalPost = user.postInstagram.length;
-      delete user.postInstagram;
+      relations: ['postInstagram'],
     });
 
-    return [result, total];
+    const _result: any = {
+      ...result,
+      totalPost: result?.postInstagram?.length,
+    };
+
+    delete _result.postInstagram;
+
+    return _result;
   }
 }
